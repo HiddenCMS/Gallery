@@ -1,0 +1,37 @@
+{
+    "name": "hiddencms/gallery",
+    "description": "Module de galeries photo pour HiddenCMS",
+    "type": "hiddencms-addon",
+    "license": "GPL-3.0-only",
+    "require": {
+        "php": ">=8.1",
+        "hiddencms/core": "^0.7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "HB\\Modules\\Gallery\\": "modules/gallery/",
+            "HiddenCMS\\Gallery\\": "src/"
+        },
+        "classmap": [
+            "modules/gallery/gallery.php"
+        ]
+    },
+    "extra": {
+        "hiddencms": {
+            "addons": [
+                {
+                    "type": "module",
+                    "name": "gallery",
+                    "class": "HB\\Modules\\Gallery\\Gallery",
+                    "path": "modules/gallery"
+                }
+            ],
+            "migrations": [
+                "HiddenCMS\\Gallery\\Migrations\\CreateGalleryTables"
+            ],
+            "seeders": [
+                "HiddenCMS\\Gallery\\Seeders\\InstallDefaults"
+            ]
+        }
+    }
+}
