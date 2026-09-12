@@ -6,6 +6,19 @@ use HB\HiddenCMS\Loadables\Controllers\Module as Controller_Module;
 
 class Index extends Controller_Module
 {
+	public function page_block($block = 'index', $settings = [])
+	{
+		$value = $this->module->page_block($block, $settings);
+		$settings = $value['settings'];
+		$category_id = strpos($settings['block'], 'category:') === 0 ? (int)substr($settings['block'], 9) : 0;
+		$galleries = array_values(array_filter($this->model()->all($category_id), function($gallery){ return !empty($gallery['published']); }));
+		$this->css('gallery')->css('page-blocks');
+		return $this->view('page_block', [
+			'galleries' => $this->with_images(array_slice($galleries, 0, $settings['limit'])),
+			'display' => $settings['display']
+		]);
+	}
+
 	public function index($galleries)
 	{
 		$this->title($this->lang('Galeries'));

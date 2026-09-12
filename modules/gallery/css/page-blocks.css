@@ -1,0 +1,26 @@
+.gallery-page-block.gallery-page-block-list {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.gallery-page-block-list .gallery-album {
+	display: flex;
+	align-items: center;
+}
+
+.gallery-page-block-list .gallery-album-cover {
+	flex: 0 0 110px;
+	width: 110px;
+	aspect-ratio: 1;
+}
+
+.gallery-page-block-list .gallery-album-copy {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+.gallery-page-block {
+	--gallery-accent: var(--theme-primary, #126b58);
+	--gallery-muted: #68736e;
+	--gallery-line: rgba(38, 49, 45, .14);
+	min-width: 0;
+}

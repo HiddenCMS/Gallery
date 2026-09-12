@@ -16,6 +16,7 @@ class Gallery extends Module
 			'license'        => 'GPLv3',
 			'admin'          => TRUE,
 			'front'          => TRUE,
+			'page_blocks'    => TRUE,
 			'version'        => '1.0',
 			'reserved_route' => 'gallery',
 			'routes'         => [
@@ -59,6 +60,48 @@ class Gallery extends Module
 				]
 			]
 		];
+	}
+
+	public function page_blocks()
+	{
+		$blocks = ['index' => ['title' => (string)$this->lang('Toutes les galeries'), 'icon' => 'far fa-images']];
+		foreach ($this->model('categories')->all() as $category)
+		{
+			$blocks['category:'.$category['category_id']] = ['title' => utf8_html_entity_decode($category['title'], ENT_QUOTES), 'icon' => 'far fa-folder-open'];
+		}
+		foreach ($blocks as &$block)
+		{
+			$block['displays'] = [
+				'cards' => ['title' => (string)$this->lang('Cartes de galeries'), 'icon' => 'fas fa-th-large'],
+				'list' => ['title' => (string)$this->lang('Liste verticale'), 'icon' => 'fas fa-list']
+			];
+			$block['fields'] = ['limit' => ['label' => (string)$this->lang('Nombre de galeries visibles'), 'type' => 'number', 'default' => 6, 'min' => 1, 'max' => 24, 'step' => 1]];
+		}
+		unset($block);
+		return $blocks;
+	}
+
+	public function page_block($block = 'index', $settings = [])
+	{
+		$blocks = $this->page_blocks();
+		$block = isset($blocks[$block]) ? $block : 'index';
+		return ['route' => '', 'settings' => [
+			'block' => $block,
+			'display' => isset($settings['display']) && $settings['display'] === 'list' ? 'list' : 'cards',
+			'limit' => min(24, max(1, (int)($settings['limit'] ?? 6)))
+		]];
+	}
+
+	public function page_block_form_value($block)
+	{
+		$settings = isset($block['settings']) && is_array($block['settings']) ? $block['settings'] : [];
+		$value = $this->page_block($settings['block'] ?? 'index', $settings);
+		return ['type' => 'module', 'module' => $this->info()->name, 'block' => $value['settings']['block'], 'settings' => $value['settings']];
+	}
+
+	public function page_block_content($block = 'index', $settings = [])
+	{
+		return $this->controller('index')->page_block($block, $settings);
 	}
 
 	public function gallery_path($category, $slug)
