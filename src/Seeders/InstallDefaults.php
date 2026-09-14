@@ -13,8 +13,8 @@ class InstallDefaults implements Seeder
 			$category_id = $db->insert_checked('gallery_categories', ['name' => 'general']);
 			$db->insert_checked('gallery_categories_lang', [
 				'category_id' => $category_id,
-				'lang'        => 'fr',
-				'title'       => 'Général'
+				'lang'        => 'en',
+				'title'       => 'General'
 			]);
 		}
 
@@ -26,7 +26,7 @@ class InstallDefaults implements Seeder
 			$db->insert_checked('menus_items', [
 				'menu_id'   => $menu_id,
 				'parent_id' => NULL,
-				'title'     => 'Galeries',
+				'title'     => 'Galleries',
 				'url'       => 'gallery',
 				'target'    => '_parent',
 				'position'  => $position + 1,

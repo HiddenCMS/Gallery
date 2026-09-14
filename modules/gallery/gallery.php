@@ -9,15 +9,15 @@ class Gallery extends Module
 	protected function __info()
 	{
 		return [
-			'title'          => $this->lang('Galeries'),
-			'description'    => $this->lang('Galeries d’images alimentées par la médiathèque.'),
+			'title'          => $this->lang('Galleries'),
+			'description'    => $this->lang('Galleries populated with images from the media library.'),
 			'icon'           => 'far fa-images',
 			'author'         => 'HiddenCMS',
 			'license'        => 'GPLv3',
 			'admin'          => TRUE,
 			'front'          => TRUE,
 			'page_blocks'    => TRUE,
-			'version'        => '1.0',
+			'version'        => '0.2.0',
 			'reserved_route' => 'gallery',
 			'routes'         => [
 				'admin/categories/add'                     => '_categories_add',
@@ -40,21 +40,21 @@ class Gallery extends Module
 			'default' => [
 				'access' => [
 					[
-						'title'  => 'Galeries',
+						'title'  => (string)$this->lang('Galleries'),
 						'icon'   => 'far fa-images',
 						'access' => [
-							'add_gallery'    => ['title' => 'Ajouter', 'icon' => 'fas fa-plus', 'admin' => TRUE],
-							'modify_gallery' => ['title' => 'Modifier', 'icon' => 'fas fa-edit', 'admin' => TRUE],
-							'delete_gallery' => ['title' => 'Supprimer', 'icon' => 'far fa-trash-alt', 'admin' => TRUE]
+							'add_gallery'    => ['title' => (string)$this->lang('Add'), 'icon' => 'fas fa-plus', 'admin' => TRUE],
+							'modify_gallery' => ['title' => (string)$this->lang('Edit'), 'icon' => 'fas fa-edit', 'admin' => TRUE],
+							'delete_gallery' => ['title' => (string)$this->lang('Delete'), 'icon' => 'far fa-trash-alt', 'admin' => TRUE]
 						]
 					],
 					[
-						'title'  => 'Catégories',
+						'title'  => (string)$this->lang('Categories'),
 						'icon'   => 'far fa-folder-open',
 						'access' => [
-							'add_gallery_category'    => ['title' => 'Ajouter', 'icon' => 'fas fa-plus', 'admin' => TRUE],
-							'modify_gallery_category' => ['title' => 'Modifier', 'icon' => 'fas fa-edit', 'admin' => TRUE],
-							'delete_gallery_category' => ['title' => 'Supprimer', 'icon' => 'far fa-trash-alt', 'admin' => TRUE]
+							'add_gallery_category'    => ['title' => (string)$this->lang('Add'), 'icon' => 'fas fa-plus', 'admin' => TRUE],
+							'modify_gallery_category' => ['title' => (string)$this->lang('Edit'), 'icon' => 'fas fa-edit', 'admin' => TRUE],
+							'delete_gallery_category' => ['title' => (string)$this->lang('Delete'), 'icon' => 'far fa-trash-alt', 'admin' => TRUE]
 						]
 					]
 				]
@@ -64,7 +64,7 @@ class Gallery extends Module
 
 	public function page_blocks()
 	{
-		$blocks = ['index' => ['title' => (string)$this->lang('Toutes les galeries'), 'icon' => 'far fa-images']];
+		$blocks = ['index' => ['title' => (string)$this->lang('All galleries'), 'icon' => 'far fa-images']];
 		foreach ($this->model('categories')->all() as $category)
 		{
 			$blocks['category:'.$category['category_id']] = ['title' => utf8_html_entity_decode($category['title'], ENT_QUOTES), 'icon' => 'far fa-folder-open'];
@@ -72,10 +72,10 @@ class Gallery extends Module
 		foreach ($blocks as &$block)
 		{
 			$block['displays'] = [
-				'cards' => ['title' => (string)$this->lang('Cartes de galeries'), 'icon' => 'fas fa-th-large'],
-				'list' => ['title' => (string)$this->lang('Liste verticale'), 'icon' => 'fas fa-list']
+				'cards' => ['title' => (string)$this->lang('Gallery cards'), 'icon' => 'fas fa-th-large'],
+				'list' => ['title' => (string)$this->lang('Vertical list'), 'icon' => 'fas fa-list']
 			];
-			$block['fields'] = ['limit' => ['label' => (string)$this->lang('Nombre de galeries visibles'), 'type' => 'number', 'default' => 6, 'min' => 1, 'max' => 24, 'step' => 1]];
+			$block['fields'] = ['limit' => ['label' => (string)$this->lang('Number of visible galleries'), 'type' => 'number', 'default' => 6, 'min' => 1, 'max' => 24, 'step' => 1]];
 		}
 		unset($block);
 		return $blocks;
@@ -114,7 +114,7 @@ class Gallery extends Module
 		$links = [];
 		foreach ($this->model('categories')->all() as $category)
 		{
-			$links[$this->category_path($category['name'])] = '[Catégorie de galeries] '.$category['title'];
+			$links[$this->category_path($category['name'])] = (string)$this->lang('[Gallery category] %s', $category['title']);
 		}
 		foreach ($this->model()->all() as $gallery)
 		{

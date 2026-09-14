@@ -21,7 +21,7 @@ class Index extends Controller_Module
 
 	public function index($galleries)
 	{
-		$this->title($this->lang('Galeries'));
+		$this->title($this->lang('Galleries'));
 		$this->css('gallery');
 		$galleries = $this->with_images($galleries);
 

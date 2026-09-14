@@ -3,8 +3,8 @@
 	<header class="gallery-index-header">
 		<span class="gallery-index-icon"><?php echo icon('far fa-images') ?></span>
 		<div>
-			<h1 id="gallery-index-title"><?php echo isset($category) ? utf8_htmlentities($category['title']) : $this->lang('Galeries') ?></h1>
-			<p><?php echo $this->lang('Parcourez les albums photo.') ?></p>
+			<h1 id="gallery-index-title"><?php echo isset($category) ? utf8_htmlentities($category['title']) : $this->lang('Galleries') ?></h1>
+			<p><?php echo $this->lang('Browse photo albums.') ?></p>
 		</div>
 	</header>
 
@@ -28,6 +28,6 @@
 		<?php endforeach ?>
 	</div>
 	<?php else: ?>
-	<div class="gallery-empty"><?php echo icon('far fa-images') ?><strong><?php echo $this->lang('Aucune galerie publiée pour le moment.') ?></strong></div>
+	<div class="gallery-empty"><?php echo icon('far fa-images') ?><strong><?php echo $this->lang('No published galleries yet.') ?></strong></div>
 	<?php endif ?>
 </section>

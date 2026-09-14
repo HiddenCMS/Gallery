@@ -8,17 +8,17 @@ class Admin extends Controller_Module
 {
 	public function index($galleries)
 	{
-		$this->title($this->lang('Galeries'));
+		$this->title($this->lang('Galleries'));
 
 		$gallery_table = $this->table()->add_columns([
 			[
 				'content' => function($data){
-					return $data['published'] ? icon('fas fa-circle text-success', 'Publiée') : icon('far fa-circle text-muted', 'Non publiée');
+					return $data['published'] ? icon('fas fa-circle text-success', (string)$this->lang('Published')) : icon('far fa-circle text-muted', (string)$this->lang('Unpublished'));
 				},
 				'size' => TRUE
 			],
 			[
-				'title'   => $this->lang('Titre'),
+				'title'   => $this->lang('Title'),
 				'content' => function($data){
 					return '<a href="'.url('admin/gallery/'.$data['gallery_id'].'/'.$data['slug']).'">'.utf8_htmlentities($data['title']).'</a>';
 				},
@@ -26,13 +26,13 @@ class Admin extends Controller_Module
 				'sort'   => function($data){ return $data['title']; }
 			],
 			[
-				'title'   => $this->lang('Catégorie'),
+				'title'   => $this->lang('Category'),
 				'content' => function($data){ return utf8_htmlentities($data['category_title']); },
 				'search'  => function($data){ return $data['category_title']; },
 				'sort'    => function($data){ return $data['category_title']; }
 			],
 			[
-				'title'   => $this->lang('Dossier'),
+				'title'   => $this->lang('Folder'),
 				'content' => function($data){ return '<code>'.utf8_htmlentities($data['directory'] ?: '/').'</code>'; },
 				'search'  => function($data){ return $data['directory']; }
 			],
@@ -43,7 +43,7 @@ class Admin extends Controller_Module
 				],
 				'size' => TRUE
 			]
-		])->data($galleries)->no_data($this->lang('Aucune galerie'))->display();
+		])->data($galleries)->no_data($this->lang('No galleries'))->display();
 
 		$category_table = $this->table()->add_columns([
 			[
@@ -62,11 +62,11 @@ class Admin extends Controller_Module
 				],
 				'size' => TRUE
 			]
-		])->pagination(FALSE)->data($this->model('categories')->all())->no_data($this->lang('Aucune catégorie'))->display();
+		])->pagination(FALSE)->data($this->model('categories')->all())->no_data($this->lang('No categories'))->display();
 
 		return $this->row(
-			$this->col($this->panel()->heading($this->lang('Catégories'), 'far fa-folder-open')->body($category_table)->footer_if($this->is_authorized('add_gallery_category'), $this->button_create('admin/gallery/categories/add', $this->lang('Créer une catégorie')))->size('col-12 col-lg-4')),
-			$this->col($this->panel()->heading($this->lang('Galeries'), 'far fa-images')->body($gallery_table)->footer_if($this->is_authorized('add_gallery'), $this->button_create('admin/gallery/add', $this->lang('Créer une galerie')))->size('col-12 col-lg-8'))
+			$this->col($this->panel()->heading($this->lang('Categories'), 'far fa-folder-open')->body($category_table)->footer_if($this->is_authorized('add_gallery_category'), $this->button_create('admin/gallery/categories/add', $this->lang('Create a category')))->size('col-12 col-lg-4')),
+			$this->col($this->panel()->heading($this->lang('Galleries'), 'far fa-images')->body($gallery_table)->footer_if($this->is_authorized('add_gallery'), $this->button_create('admin/gallery/add', $this->lang('Create a gallery')))->size('col-12 col-lg-8'))
 		);
 	}
 
@@ -90,7 +90,7 @@ class Admin extends Controller_Module
 
 	public function delete($gallery_id, $title)
 	{
-		$this->form()->confirm_deletion($this->lang('Supprimer la galerie'), $this->lang('Êtes-vous sûr(e) de vouloir supprimer la galerie <b>%s</b> ? Les images resteront dans la médiathèque.', $title));
+		$this->form()->confirm_deletion($this->lang('Delete gallery'), $this->lang('Are you sure you want to delete gallery <b>%s</b>? Images will remain in the media library.', $title));
 
 		if ($this->form()->is_valid())
 		{
@@ -113,7 +113,7 @@ class Admin extends Controller_Module
 
 	public function _categories_delete($category_id, $title)
 	{
-		$this->form()->confirm_deletion($this->lang('Supprimer la catégorie'), $this->lang('Êtes-vous sûr(e) de vouloir supprimer la catégorie <b>%s</b> et toutes ses galeries ? Les images resteront dans la médiathèque.', $title));
+		$this->form()->confirm_deletion($this->lang('Delete category'), $this->lang('Are you sure you want to delete category <b>%s</b> and all its galleries? Images will remain in the media library.', $title));
 
 		if ($this->form()->is_valid())
 		{
@@ -128,15 +128,15 @@ class Admin extends Controller_Module
 	{
 		$editing = !empty($gallery['gallery_id']);
 		$form = $this->form2()
-			->rule($this->form_text('title')->title('Titre')->value(isset($gallery['title']) ? $gallery['title'] : '')->required())
-			->rule($this->form_select('category')->title('Catégorie')->data($this->model('categories')->choices())->value(isset($gallery['category_id']) ? $gallery['category_id'] : '')->search(0)->required())
+			->rule($this->form_text('title')->title('Title')->value(isset($gallery['title']) ? $gallery['title'] : '')->required())
+			->rule($this->form_select('category')->title('Category')->data($this->model('categories')->choices())->value(isset($gallery['category_id']) ? $gallery['category_id'] : '')->search(0)->required())
 			->rule($this->form_text('directory')->value(isset($gallery['directory']) ? $gallery['directory'] : '')->required()->size('gallery-directory-value'))
 			->info('<style>.field.gallery-directory-value{display:none!important}</style>')
-			->info($this->module('files')->picker_directory_field('directory', isset($gallery['directory']) ? $gallery['directory'] : '', 'Dossier de la médiathèque', 'gallery-image'))
-			->rule($this->form_editor('content_before')->title('Contenu avant les images')->value(isset($gallery['content_before']) ? $gallery['content_before'] : ''))
-			->rule($this->form_editor('content_after')->title('Contenu après les images')->value(isset($gallery['content_after']) ? $gallery['content_after'] : ''))
-			->rule($this->form_checkbox('published')->size('hb-switch-field')->data(['1' => 'Galerie publiée'])->value(!isset($gallery['published']) || $gallery['published'] ? ['1'] : []))
-			->submit($editing ? 'Enregistrer' : 'Créer la galerie')
+			->info($this->module('files')->picker_directory_field('directory', isset($gallery['directory']) ? $gallery['directory'] : '', (string)$this->lang('Media library folder'), 'gallery-image'))
+			->rule($this->form_editor('content_before')->title((string)$this->lang('Content before images'))->value(isset($gallery['content_before']) ? $gallery['content_before'] : ''))
+			->rule($this->form_editor('content_after')->title((string)$this->lang('Content after images'))->value(isset($gallery['content_after']) ? $gallery['content_after'] : ''))
+			->rule($this->form_checkbox('published')->size('hb-switch-field')->data(['1' => (string)$this->lang('Publish')])->value(!isset($gallery['published']) || $gallery['published'] ? ['1'] : []))
+			->submit($editing ? (string)$this->lang('Save') : (string)$this->lang('Create gallery'))
 			->back('admin/gallery')
 			->success(function($data) use ($editing, $gallery){
 				$data['published'] = !empty($data['published']);
@@ -144,22 +144,22 @@ class Admin extends Controller_Module
 				if ($editing)
 				{
 					$this->model()->edit($gallery['gallery_id'], $data);
-					notify('Galerie modifiée avec succès');
+					notify((string)$this->lang('Gallery updated successfully'));
 				}
 				else
 				{
 					$this->model()->add($data);
-					notify('Galerie créée avec succès');
+					notify((string)$this->lang('Gallery created successfully'));
 				}
 
 				redirect('admin/gallery');
 			});
 
-		$this->subtitle($editing ? $this->lang('Modifier la galerie') : $this->lang('Créer une galerie'));
+		$this->subtitle($editing ? $this->lang('Edit gallery') : $this->lang('Create a gallery'));
 
 		if (!$this->model('categories')->choices())
 		{
-			return $this->panel()->heading($this->lang('Galerie'), 'far fa-images')->body('<div class="ui warning message">'.$this->lang('Créez d’abord une catégorie avant d’ajouter une galerie.').'</div>'.$this->button_create('admin/gallery/categories/add', $this->lang('Créer une catégorie')));
+			return $this->panel()->heading($this->lang('Gallery'), 'far fa-images')->body('<div class="ui warning message">'.$this->lang('Create a category before adding a gallery.').'</div>'.$this->button_create('admin/gallery/categories/add', $this->lang('Create a category')));
 		}
 
 		return $form->panel();
@@ -168,22 +168,22 @@ class Admin extends Controller_Module
 	private function category_form($category = [])
 	{
 		$editing = !empty($category['category_id']);
-		$this->subtitle($editing ? $this->lang('Modifier la catégorie') : $this->lang('Créer une catégorie'));
+		$this->subtitle($editing ? $this->lang('Edit category') : $this->lang('Create a category'));
 
 		return $this->form2()
-			->rule($this->form_text('title')->title('Nom')->value(isset($category['title']) ? $category['title'] : '')->required())
-			->submit($editing ? 'Enregistrer' : 'Créer la catégorie')
+			->rule($this->form_text('title')->title('Name')->value(isset($category['title']) ? $category['title'] : '')->required())
+			->submit($editing ? (string)$this->lang('Save') : (string)$this->lang('Create category'))
 			->back('admin/gallery')
 			->success(function($data) use ($editing, $category){
 				if ($editing)
 				{
 					$this->model('categories')->edit($category['category_id'], $data['title']);
-					notify('Catégorie modifiée avec succès');
+					notify((string)$this->lang('Category updated successfully'));
 				}
 				else
 				{
 					$this->model('categories')->add($data['title']);
-					notify('Catégorie créée avec succès');
+					notify((string)$this->lang('Category created successfully'));
 				}
 
 				redirect('admin/gallery');

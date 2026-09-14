@@ -13,6 +13,6 @@
 	</a>
 	<?php endforeach ?>
 	<?php if (!$galleries): ?>
-	<p class="gallery-empty"><?php echo $this->lang('Aucune galerie publiée pour le moment.') ?></p>
+	<p class="gallery-empty"><?php echo $this->lang('No published galleries yet.') ?></p>
 	<?php endif ?>
 </div>
