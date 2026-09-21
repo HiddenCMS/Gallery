@@ -17,7 +17,7 @@ class Gallery extends Module
 			'admin'          => TRUE,
 			'front'          => TRUE,
 			'page_blocks'    => TRUE,
-			'version'        => '0.2.0',
+			'version'        => '0.2.1',
 			'reserved_route' => 'gallery',
 			'routes'         => [
 				'admin/categories/add'                     => '_categories_add',
